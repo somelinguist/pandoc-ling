@@ -216,7 +216,7 @@ function addDivToHeader (head)
       and head.level == 1 
       and head.classes[1] ~= "unnumbered"
   then
-    head.classes:extend({"restart"})
+    head.classes:insert(1, "restart")
     return pandoc.Div(head)
   end
 end
@@ -229,16 +229,10 @@ function processDiv (div)
 
   -- keep track of chapters (header == 1)
   -- included in this loop by trick "addDivToHeader"
-  if div.content[1].tag == "Header" then
+  if div.content[1].tag == "Header" and div.content[1].classes[1] == "restart" then
     chapter = chapter + 1
     counterInChapter = 0
-    classes = {}
-    for  _,cls in ipairs(div.content[1].classes) do
-        if cls ~= "restart" then
-            table.insert(classes, cls)
-        end
-    end
-    div.content[1].classes = classes
+    div.content[1].classes:remove(1)
     -- remove div
     return div.content
   end
